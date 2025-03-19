@@ -1,0 +1,6 @@
+Creati un fisier bash/shell in care sa faceti urmatoarele:
+
+- primiti ca input un fisier: input1000
+- printati de cate ori apare numele imaginii
+- calculati average pentru coloana CPU_Usage
+- printati cate ip-uri incep cu 120 si se termina cu .10
