@@ -1,0 +1,457 @@
+Tphe grep filter
+===============
+
+$ grep [cvnqsri] regularexpression file ... 
+
+Read the specified files, or if not exist read standard
+input, and print to standard output the lines to matck
+regularexpression. 
+
+The options mean: 
+-c count the number of lines that is match to regular expression; 
+-v are considered only lines that NOT check the regular expression; 
+-n every line of output is preceded by its number of line
+in the current file;
+-q,-s do not show anything but a return code is setting
+(0 if it found at least one line to verify the regular expression,
+1 if not found lines, 2 if an error occurred); 
+-r recursive processing of the directories; 
+-i ignore case (a == A etc.). 
+
+For example, we use a grep command to display (with screen pages),
+the list of files and direcrories from the current directory and
+its subdirectories, who as owner nume_user:
+
+$ ls-lFR | grep nume_user | more 
+
+
+The sed editor filter
+=====================
+
+(Stream Editor) a noninteractive text editor. It read a file (or
+in the absence takes the standard input), applied on his 
+editing commands, then the result is printed on standard output. 
+
+$ sed [-n] [-e script] [-f filescript] file ... 
+
+-n option indicates that output is not standard output file.
+Instead, each individual file is saved with the same name as it
+input file. 
+
+-e or -f options (mutually exclusive): 
+"script" contains the sequence of editing commands, desired 
+is applied to the entrance, 
+and "filescript" is the name of a file containing such.
+The sequence of commands that are intended to be applied to
+input files.
+
+The sequence of editing commands appears as rows the following type: 
+
+Position EditingCommand 
+
+Position indicated a line or an group of lines which is 
+apply editing command. Position is a regular expression: 
+- A line number; 
+- A pair of numbers indicating the first and last line of the group; 
+- One or two regular expressions in the form /.../ or ?...?; 
+- Current line (the . character); 
+- The last line (the $ character); 
+- Etc. 
+
+EditingCommand can be: 
+- p displays the text frpm Position to the standard output; 
+- d delete all lines from Position; 
+- i\ <ENTER> to insert lines before Position. 
+
+For example, if file-s file contains three lines: 
+5 i\ 
+ttttt\ 
+11111 
+
+then the following command: 
+$ sed -f file-s A 
+
+insert in the file A, before the 5th line,  two 
+lines: one with the letters t and the second with 1. 
+- a\ <ENTER> works similar to \i but insertion 
+made after the Position. Returning to the example above, 
+the two lines will be inserted after the 5th line. 
+- s/regularexpression/string/[flags]
+replaces appearance of text that match the regular expression with string.
+In the absence of flags to replace only the first occurrence.
+If flags is a number n, then replace only the n'th appearance,
+if flags is the character 'g' then replace all occurrences. 
+
+In the following, two examples will presented: 
+
+a) To remove all frames: <digit> <letter> <digit> 
+from the file fis1. The command is: 
+
+$ sed "s/[0-9][a-zA-Z][0-9]//g" fis1 
+
+b) To replace the last word in each line with the first word.
+Words containing only lowcase letters and digits and are
+separated by spaces. The command is: 
+
+$ sed "s/\(^[a-z,0-9]*\)\(.*\)\([a-z,0-9]*$\)/\1\2\1/g" fis1 
+
+(To note that \ 1, \ 2, ..., \ 9 when they occur in "string" 
+means first, second, ..., that the 9th regular subexpression 
+from regular expression) 
+
+The awk filter
+==============
+
+awk is a programming language for processing data given in text files.
+The result is displayed at standard output. Synopsis:
+
+awk [ -f scripting-file ] [ -Fc ] [ script ] [ variable=value ... ] [ file ...]
+
+The script can be given in the command line (between quoutes) or in a
+stand-alone file. It consists of several lines of the form: 
+
+condition { statements}
+
+awk takes one by one the lines in the input files.
+For each line from each file, executes the statements for which the
+associated condition is true. A missing condition is assumed true.
+
+The syntax of conditions and statements is similar to the C language.
+
+The variables need not  be declared, their type being determined from
+the context. Initially, the variables have values of 0 for numbers
+and "" (empty string) for strings. Variables given in the command line
+start with the values provided there.
+
+Array indices start from 1 !!!
+
+Special conditions: 
+BEGIN   the corresponding statement is executed before the first line of each file
+END     the corresponding statement is executed after the last line of each file
+	
+Special variables:
+NF 	- the number of words from the current line (split at spaces or at
+	the character given in the -F option)
+FNR	- the number of the current line in the current file (for the first
+	line of the file, FNR=1)
+NR 	- the number of the current line (continue counting file after file)
+FS 	- the field separator
+FILENAME- the name of the current file (of those given in the command line)
+$0	- the current line
+$i	- the i-th word of the current line (1<=i<=NF)
+
+Predefined function:
+str1 str2	- concatenating two strings is requested by writing them one
+	after the next
+length(str) 	- the length of the string str; length <=> length($0)
+substr(s,p,n)	- the substring of s starting at the position p and of length n
+index(s1,s2)	- the position at which the string s2 appears in the 
+		string s1 (0 otherwise)
+sprintf(format, arg1,..) - returns the string that printf would print
+split(s,a,c) - where s is a string, a is an array and c is a character;
+	splits the string s in fields, considering the character c as
+	separator, or if c is missing  the implicit separator FS,
+	and saves the result in the array a
+system(cmd)	- executes the shell command cmd and returns its return value
+
+Statements:
+variable = expression	- assignment
+if, for, while, {...}	- like in C
+for (i in array-name) statement - i receives the values of the array indexes, 
+	and the statement is executed
+print list-of-expressions [ > file-name] 
+        if >file-name not exists, the values of the expressions are printed
+        on the standard output.
+        if >file-name is given,	then the result is printed in the specified
+        file.
+
+Statements are separated by ; or newline.
+A line can be continued using the character \ at the last position in the line
+
+Examples:
+
+1.Print the last word in each line of a file.
+  a) with in-line script
+        awk '{ print $NF}' file_name
+
+  b) with stand-alone script file
+        script-file : {print $NF}
+ 	awk -f scripting-file file_name
+
+2.Print the lines, from a number of files, that are longer than 5 characters.
+The lines in each file shall be displayed in reverse order.
+  scrip: 
+
+BEGIN          {n=0}
+END            {for (i=n; i>0; i--) print x[i]}
+length($0) > 5 {x[++n] = $0}
+
+  running:
+        awk -f scen fis1 fis2 fis3 ... fisn
+
+3. Write a shell script that prints all the lines, from a file given as
+the first argument, that end in a word given as the second argument.
+  a) with in-line script
+    awk '{if($NF == "'"$2"'") print}' "$1"
+
+  b) with stand-alone script file
+    script:
+      if($NF == cuv) print
+    running:
+      awk -f script -v cuv="$2" "$1"
+
+
+OBSERVATION ABOUT TEXT FILES IN UNIX AND WINDOWS:
+=================================================
+
+This observation does not necessary yourself sed or grep commands, but
+we belive is useful to do here, because it is one of the first Unix laboratories. observatie nu tine neaparat de programarea shell, dar credem ca
+
+Unix text files:
+Separation two consecutive lines with a character '\n' (New Line)
+
+Windows text files:
+Separation two consecutive lines through two succesive characters '\r\n' (Carriage Return, New Line,)
+
+FTP transfer such a file between two systems is possible that destination
+file to be an incorrect text file!
+Transfer, for example, a file from Windows to Linux, then open it by joe,
+and at the end of each line will show a ^M (representation of \r).
+Transfer from Unix to Windows, open it by Notepad, and a single line will
+appear instead more lines!
+To convince you, see files in question with Unix command:
+
+odd -abc file
+
+and you will see the content of file, including separator characters.
+
+Unix solution:
+1) tr -d "\r" <fileWindows >fisierUnix # Remove \r
+2) sed -e 's/$/\r/' <fileUnix >fileWindows
+
+Windows solution: Edit and save fileUnix with Edit text editor.
+
+Obviously it will quite easy, but interesting experience, that each
+student to write small C (C++) programs for such conversions.
+
+
+
+
+=========================================================================================
+[Problemes]
+
+.
+(a) SED
+    Delete the word "cat" from all the lines of a given file.
+
+(b) GREP
+    Given a file, display all the lines with an odd number of
+    characters.
+
+(c) AWK
+Display the current time in the following format:
+hour hh, minutes MM, seconds ss.
+
+Hint: you can use the functions strftime() and systime().
+
+Alternatively, you can use the command date in piped through awk,
+the latter being used for extracting the relevant fields.
+
+2.
+(a) SED
+    Given a file, replace the word "cat" with the word "mouse", only if
+    the word "cat" is at the beginning of the line.
+
+(b) GREP
+    Given aa file, display all the lines having the word "cat" as the
+    second word.
+
+(c) AWK
+Display the content of the files given as arguments.  Each file being
+displayed in reversed-line-order: the last line becomes first, the line
+before the last becomes the second etc. For each line, the order of the
+words will be reversed.
+
+3.
+(a) SED
+    Given a file, replace the word "cat" with the word "mouse".
+
+(b) GREP
+    Display the processes belonging to the user "root"
+
+(c) AWK
+Display the content of the files given as arguments as follows: the
+files on the positions 1, 3, 5, ... will be displayed normally.  The
+files on the positions 2, 4, 6, ... print each line with the words in
+revers order (last word is displayed first, next to last is displayed
+second, etc).
+
+4.
+(a) SED
+    Given a file, insert at the begining of each line the word "cat"
+
+(b) GREP
+    Display the number of empty lines in a given file.
+
+(c) AWK
+Display the lines from the files given as arguments that contain the
+same word on consecutive positions. For those lines, also display the
+number of the line in the file in which it appears.
+
+5.
+(a) SED
+    Given a file, append at the end of each line the word "cat".
+
+(b) GREP
+    Given a file, display al lthe lines that are not empty
+
+(c) AWK
+Display the number of the lines whose length is at least 10 characters,
+from each file given as argument. Also, display the content of those
+lines, excluding the first 10 characters from each line. After each file
+is analyzed, display the name of the file and the number of lines
+displayed.
+
+6.
+(a) SED
+    Given a file, replace all the sequences of 4 or more digits with the
+    word "cat".
+
+(b) GREP
+    Given a file, display all the lines starting with the word "cat" and
+    ending with the word "mouse".
+
+(c) AWK
+Display for each file given as an argument the first 3 characters from
+each word in it. For the words whose length is less than 3, display a
+space.
+
+7.
+(a) SED
+    Given a file, delete all the lines that contain the word "cat".
+
+(b) GREP
+    Find all the lines in a file that contains the word "cat" followed by
+    the word "mouse".
+
+(c) AWK
+Display the number of lines longer than 30 characters for each file
+given as argument. Also, for each such line, display the line number,
+the first and the last word.
+
+8.
+(a) SED
+    Given a file, delete all lines that start with #.
+
+(b) GREP
+    Determine if a given user was active on a given date.
+    See $ man lastlog
+
+(c) AWK
+Display the maximum number of identical consecutive lines from each
+input file given as argument. For each such line, display its
+contents, number of the identicaly lines, and the name of the file
+containing it.
+
+9.
+(a) SED
+    Given an input file, put the word "cat" in front of every lower-case
+    letter.
+
+(b) GREP
+    Determine wheterh a given user is active or not.
+
+(c) AWK
+Display for each file given as argument, the number of the lines, number
+of the sentences (each sentence ends with . or ? or!), the number of
+words, and the number of characters.
+
+10.
+(a) SED
+    Delete all the digits from a given file.
+
+(b) GREP
+    Using the command grep, display the entire content of a given file.
+
+(c) AWK
+Display for the files given as arguments, the number of files,
+the total number of words and the mean number of words
+from the files from the command line.
+
+11.
+(a) SED
+    Given a file, replace all lower case letters with the word "cat".
+
+(b) GREP
+    Find recursively, all the files in a given directory, that contain
+    the word "cat".
+
+(c) AWK
+Display, from the files given as arguments, the name of the file that has
+the maximum number of words and also this number of the words.
+
+12.
+(a) SED
+    Given a file, replace all the lower case vowels, with upper case
+    vowels, and the upper case vowels with lower case ones.
+
+(b) GREP
+    Display all the users named "dan" belonging to group "911".
+
+(c) AWK
+Print the length and the content of the longest line from the files
+given as arguments.
+
+13.
+(a) SED
+
+    Swap the first and third filed in a given file. The fields in the
+    file are separated by colon (:)
+
+(b) GREP
+    Find all the computer science students in the first three years of
+    study, belonging to odd numbered groups. The usernames of the
+    computer science students have either "ie" or "ir" as their third
+    and fourth letters. See the file /etc/passwd and $man 5 passwd.
+
+(c) AWK
+Being given a configuration file like the one below, copy the files in
+the left column to the files in the right column.  The configuration
+file should look like this:
+
+  /home/x/awks/temp/file1 /home/x/final
+  /home/x/awks/temp/file2 /home/x/final
+  /home/x/awks/temp/file3 /home/x/final
+  /home/x/awks/temp/file4 /home/X/final
+
+Suggestion: to execute the copy command, use the function
+system(command), which executes the given command.
+
+14.
+(a) SED
+    Delete the second and fourth words on each line of a given file.
+
+(b) GREP
+    Display all the users running the command "bash"
+
+(c) AWK
+Print the total number of bytes from all the files from the current
+directory, that have been last modified in the November (regardless of
+the year).
+Hints: You can run ls -l | awk ...
+
+15.
+(a) SED
+    Swap the first and third word on each line of a given file.
+
+(b) GREP
+    Find all freshmen (first year of study) named Maria.
+    See the file /etc/passwd and $ man 5 passwd.
+
+(c) AWK
+Suppose you have a file called 'file1' that has two columns of numbers.
+Create a new file called 'file2' that has the columns 1 and the
+column 2 as before, and a third column which is the ratio of the
+numbers from the column 1 and the column 2.
+In this second file, only the lines for which column 1 is smaller than
+column 2 should appear.

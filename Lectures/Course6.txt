@@ -1,0 +1,160 @@
+Course 6
+===================================================================================================
+[Homework]
+
+===================================================================================================
+[Observations]
+ps -u cipri
+ps -fax | grep username
+ps -ef | grep username
+
+while true; do clear; ps -ef | grep username; done;
+
+#include<stdid.h>
+
+int main()
+{
+	while(1)
+	{
+		fork();
+	}
+	sleep(30);
+	return 0;
+}
+===================================================================================================
+A process has two memory regions(logical) in which it is stored.
+-user context 
+-kernel context
+
+User context 
+
+--------._________________.
+		| code			  | <-code segment
+program	.-----------------.
+stored	| data constants  | <- hello world
+on 		.-----------------.
+disk	| variable data	  | <- int n = 7
+PURE	| initialized     |
+--------.-----------------.
+		| uninitialized   | 
+IMPURE	| variable data   |
+		.-----------------.
+		|    \/Stack\/	  |
+		|		          |
+		|				  |
+		|				  |
+		|				  |
+		|	/\Heap/\	  |
+		|_________________|
+
+Kernel context
+
+.___________________.
+| Process table   	| <- process stats, process memory size, PID,PPID, UID, EUID, GID, EGID
+| entry			  	|
+.-------------------.
+| User regions	  	| <- enviroument variables ,  PID,PPID, UID, EUID, GID, EGID ,  table of open files (file description )
+.-------------------.
+|Vector of memory 	| 
+| regions		  	|
+.-------------------.
+| Kernel Stack	  	| <-
+.-------------------.
+| Hardware registry |
+| context		  	|
+|___________________|
+===================================================================================================
+[Examples]
+
+ps -u username | grep 
+p1.c
+
+
+#include <stdio.h>
+#include <unistd.h>
+int main()
+{
+	printf("PID BEFORE: %d \n ",getpid(), getppid());
+
+	r = fork(); //create child process
+
+	//printf("PID/PPID/R AFTER: %d  %d %d \n ",getpid(), getppitd,r);
+	if (r==0) //This if will contains child code
+	{
+		for(i=0;i<5;i++)
+		{
+			printf("CHILD  %d \n", getpid());
+			sleep(1);
+		}
+		exit(0);
+	}
+	else
+	{
+		for(i=0;i<5;i++)
+			{
+				printf("PARRENT %d \n", getpid());
+				sleep(1);
+			}
+	}
+	sleep(20);
+	return 0;
+}
+
+
+p2.c
+
+#include <stdio.h>
+#include <unistd.h>
+int main()
+{
+	if(fork())
+	{
+		//....
+		exit(0);
+	}
+	if(fork())
+	{
+		//....
+		exit(0);
+	}
+	if(fork())
+	{
+		//....
+		exit(0);
+	}
+
+	sleep(30);
+	return 0;
+}
+
+
+
+p3.c
+
+#include <stdio.h>
+#include <unistd.h>
+#include<sys/types.h>
+#include<sys/wait.h>
+int main()
+{
+	int i,r;
+	for(i=0;i<3;i++)
+	{
+		r=fork();
+		if(r==0)
+		{
+			//child code
+			sleep(5);
+			exit(0);
+
+		}
+		wait(0);
+	}
+
+	for(i=0;i<3;i++)
+	{
+	 	wait(0);
+	}	
+	//sleep(30);
+	return 0;
+}

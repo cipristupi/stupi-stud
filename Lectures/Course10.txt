@@ -1,0 +1,319 @@
+Course 10
+===================================================================================================
+[Homework]
+
+===================================================================================================
+[Observations]
+pthread_self - aka getPID for threads
+
+// gcc -Wall -o t1.c t1..c -lpthread
+
+OS ruleaza fiecare thread intr-o ordine random. Primul thread poate fi ultimul iar ultimul primul. Programul creeaza thread dar OS alege random thread-ul care se executa la un momendat.
+===================================================================================================
+Threads
+----------------
+
+- a threads is an execution unit that executes a function
+- there are many thread implementations, mostly every OS has a native flavor of threads, but there are also libraries that are ported across OSes. In Linux the standard are the POSIX threads, aka "phreads"
+-API: 	pthread_create (kinda like fork())
+		pthread_join (like wait)
+		pthread_self (like getpid)
+
+- about communication, threads do it using the common global variables and heap
+
+-there is always a main thread, which is _not_ a parent for the other threads, it's just the main thread. However, when the main thread ends, all other threads, end (unless they are detached)
+
+-pthread_create, does _not_ wait for the thread function to finish. It comes back right away, after it created the thread, and the function will be executed concurrently (at the same time) with the main thread.
+
+-the OS is responsible for choosing which of your threads get he CPU and when and for how long. So there is no way to predict or rely on a certain order of execution for your threads
+- since all threads share the same memory space and can modify the same variables or memory locations, it is possible to get corrupted results or data. This is mostly caused by 2 or more threads reading and writing the same memory location. This is called a "race" condition.
+
+
+One possible execution scenario for t2.c
+-------------------
+Consider M as the main thread and T0 - T9 the other 10 threads.
+M gets CPU ->arg= 0,0 -> creates T1
+M taken off the CPU
+OS has to chose between M and T1
+OS Chooses M
+
+M gets CPU -> arg = 1,1 -> creates T2
+M taken off the CPU
+OS has to choose between M , T1 T2
+OS Choose M
+
+M gets CPU -> arg = 2,2 -> creates T3
+M taken off the CPU
+OS has to choose between M , T1 T2 and T3
+OS Choose T1
+
+T1 gets CPU -> prints out 4
+T1 taken off the CPU
+OS has to choose between M , T2 and T3
+OS Choose T3
+
+T3 get CPU -> prints out 4
+....
+
+
+
+Mutexes
+---------
+
+-used for synchronization (mutual exclusion)
+-API:	pthread_mutex_init
+		pthread_mutex_destroy
+		pthread_mutex_lock
+		pthread_mutex_unlock
+
+-whenever data gets corrupted, you will be _tempted_ to add delays in your program to fix it. DO NOT DO THAT EVER! Either use different memory locations or use synchronization mechanism (like the mutexes)
+
+-why am I saying DO NOT DO THAT EVER? Because, given the undeterministics nature of thread execution, every now and then it will go bad. The delays will decrease the chances of errors, but the errors are still possible.
+
+-the delay (using sleep) that appear in the lecture examples, are meant to slow down execution so that we can see various behaviors nothing else!
+
+-mutexes act as locks around a fragment of code, only one thread can execute that code at a time.
+===================================================================================================
+[Examples]
+
+t1.c
+
+// gcc -Wall -o t1 t1..c -lpthread
+#include <stdio.h>
+#include <pthread.h>
+
+#define N 10
+/* Thread function */
+
+void* func(void* arg) // Remember this header , it's important
+{
+	printf("stuff  %d \n",(int)pthread_self());
+	return NULL;
+}
+
+int main()
+{
+	int i;
+	pthread_t thr[N]; //handler
+	for(i=0;i<N;i++)
+	{
+		pthread_create(&thr[i],NULL,func,NULL);
+	}
+
+	for(i=0;i<N;i++)
+	{
+		pthread_join(thr[i],NULL);
+	}
+	return 0;
+
+}
+
+
+
+t2.c
+
+#include <stdio.h>
+#include <pthread.h>
+
+#define N 10
+
+struct pair
+{
+	int a;
+	int b;
+};
+
+void* add(void* arg) 
+{
+	struct pair* p = (struct pair*)arg;
+	printf("ID=%u  SUM=%d\n",(unsigned int)pthread_self(),p->a + p->b);
+	return NULL;
+}
+
+int main()
+{
+	int i;
+	pthread_t thr[N]; //handler
+	struct pair arg[10]; //store data in different memory locations
+
+	for(i=0;i<N;i++)
+	{
+		arg[i].a=i;
+		arg[i].b=i;
+		pthread_create(&thr[i],NULL,add,&arg[i]);
+	}
+
+	for(i=0;i<N;i++)
+	{
+		pthread_join(thr[i],NULL);
+	}
+	return 0;
+
+}
+
+
+t3.c
+
+#include <stdio.h>
+#include <pthread.h>
+#include<sdtlib.h>
+
+#define N 10
+
+struct pair
+{
+	int a;
+	int b;
+};
+
+void* add(void* arg) 
+{
+	struct pair* p = (struct pair*)arg;
+	printf("ID=%u  SUM=%d\n",(unsigned int)pthread_self(),p->a + p->b);
+	free(arg);
+	return NULL;
+}
+
+int main()
+{
+	int i;
+	pthread_t thr[N]; //handler
+	struct pair* arg; //store data in different memory locations
+
+	for(i=0;i<N;i++)
+	{
+		arg= (struct pair*)malloc(sizeof(struct pair));
+		arg->a=i;
+		arg->b=i;
+		pthread_create(&thr[i],NULL,add,arg);
+	}
+
+	for(i=0;i<N;i++)
+	{
+		pthread_join(thr[i],NULL);
+	}
+	return 0;
+
+}
+
+
+t4.c
+
+#include <stdio.h>
+#include <pthread.h>
+#include<sdtlib.h>
+
+#define N 10
+
+
+void* show_order_number(void* arg) 
+{
+	int p = (int)arg;
+	printf("ID=%u  Order=%d\n",(unsigned int)pthread_self(),p);
+	return NULL;
+}
+
+int main()
+{
+	int i;
+	pthread_t thr[N]; //handler
+
+	for(i=0;i<N;i++)
+	{
+		
+		pthread_create(&thr[i],NULL,show_order_number,(int*)i); 
+	}
+
+	for(i=0;i<N;i++)
+	{
+		pthread_join(thr[i],NULL);
+	}
+	return 0;
+
+}
+
+
+t5.c
+
+#include <stdio.h>
+#include <pthread.h>
+#include<sdtlib.h>
+
+#define N 2
+
+int a[4] = {1,2,3,4};
+
+void* add_to_previous(void* arg) 
+{
+	int p = (int)arg;
+	//p==0 ->a[0] += a[1]
+	//p==1 -> a[2] += a[3]
+	a[2*p] + = a[2*p+1];
+	return NULL;
+}
+
+int main()
+{
+	int i;
+	pthread_t thr[N]; //handler
+
+	for(i=0;i<N;i++)
+	{	
+		pthread_create(&thr[i],NULL,add_to_previous,(int*)i); 
+	}
+
+	for(i=0;i<N;i++)
+	{
+		pthread_join(thr[i],NULL);
+	}
+
+	a[0] +=a[2];
+	printd("%d \n",a[0]);
+	return 0;
+
+}
+
+
+t6.c
+
+#include <stdio.h>
+#include <pthread.h>
+#include<sdtlib.h>
+#include<unistd.h>
+
+#define N 10
+
+pthread_mutex_t mtx;
+int sum=0;
+
+void* add(void* arg) 
+{
+	pthread_mutext_lock(&mtx); //Start the lock
+	int a = sum;
+	sleep(1); //For example only
+	sum = a+ 1;
+	pthread_mutex_unlock(&mtx); //End of lock
+	return NULL;
+}
+
+int main()
+{
+	int i;
+	pthread_t thr[N]; //handler
+	pthread_mutex_init(&mtx,NULL);
+
+	for(i=0;i<N;i++)
+	{
+		
+		pthread_create(&thr[i],NULL,add,NULL); 
+	}
+
+	for(i=0;i<N;i++)
+	{
+		pthread_join(thr[i],NULL);
+	}
+	pthread_mutex_destroy(&mtxs);
+	printd("%d \n",sum);
+	return 0;
+
+}

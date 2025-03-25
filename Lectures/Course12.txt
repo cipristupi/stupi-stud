@@ -1,0 +1,107 @@
+Course 12
+===================================================================================================
+[Homework]
+
+===================================================================================================
+[Observations]
+
+===================================================================================================
+
+Sequential programming
+	|
+	V
+Cannot use all hardware resources !!!!
+	|
+	V
+Concurrent programming
+	|
+	V
+Corrupt data !!!!!
+	|
+	V
+Initial exclusion (mutex,locks)
+	|-------------------------------------------------------------|
+	V															  V
+Tricky to know who and how to use.	!!!!						Deadlock
+
+
+-----------------------------------------------
+
+Deadlock
+
+check notebook
+
+
+A deadlock is a situation where multiple concurrent entities (processes , computers, whatever) wait for shared resources in a circular manner.
+
+Shared resources????
+	->we will consider as resources the locks(mutex) that protect the actual resources.
+
+
+mutex m, r;  //deadlocks examples
+
+Thread A   |   Thread b
+lock(m)	   |	lock(r)
+		   |
+lock(r)	   |	lock(m)
+		   |
+unlock(r)  |	unlock(m)
+unlock(m)  |	unlock(r)
+
+
+
+
+
+mutex m, r,q;  //deadlocks examples
+
+
+lock(m)  | lock(r) | lock(q)
+		 |		   |
+lock(r)  | lock(q) | lock(m)
+
+
+
+
+Detect deadlocks automatically
+
+->the OS store a resource allocation graph [resource][process/thread]
+
+Check notebook for draw bottom
+(P1)				(P2)				(P3)				P4				P5
+
+
+[R1]				[R2]				[R3]				[R4]				[R5]
+
+Any cycle is a deadlock
+The OS does not usually do this because it is costly(slow)
+
+
+
+Getting out of deadlocks
+->choose a victim
+	stop it
+	or roll it back to a previous checkpoint
+
+
+Livelock
+->you keep "fixing" deadlocks and they keep happening
+->if the "fixing" is done automatically, as a user all processes/threads will appear to be working( not waiting) but they will make no progress
+
+
+
+
+Preventing deadlocks
+
+->approach : determine the necessary and sufficient conditions for a deadlock to be possible and break one of those conditions
+
+1. Mutual exclusion -concurrent entities can exclude each other from accessing a part of code( we need locks)
+2. Lock-and-wait - concurrent entities can lock a resource and while owning it wait for another to lock.
+3. Non-preemption. Concurrent Entities cannot steal lock from another CE or stop them in order to get the lock.
+4. Circulation wait
+
+
+Break 1 -> data corruption
+Break 2 -> unnatural to work with
+		-> can lead to livelocks
+Break 3 -> chaos
+Break 4 -> always lock resources in the same order( that means each resource will have same king of order number - mostly stored exclusively in the developer's head)
