@@ -1,0 +1,140 @@
+Course 5
+===================================================================================================
+[Homework]
+
+===================================================================================================
+[Observations]
+file variable -return type of variable
+wc  -  word counter
+pr - tipareste pe iesirea standard fisierul
+find - parcurge directorul curent si subalterni(subfolders)
+
+Book - Unix for serious users - Silvester
+
+===================================================================================================
+Dintre fisierele text din directorul curent sa se gaseasca unul care are in el o linie care incepe cu un cuvant de cel putin 5 caractere.
+
+[Shell program ]
+
+#!/bin/bash
+for x in * # *-list of files from current directory
+	do
+	if [ `file $x | grep -c text` -ne 1 ]  #file return type of input file
+		then continue
+	fi # continue if the input file is not a text file
+
+	cat $x | cut -d" " -f1 | while read cuv1  # read for each line the first word
+	do
+	if [ ! -z $cuv1 ] && [ `expr length $cuv1` -ge 5 ]  # [ `expr length $cuv1` -ge 5 ] -> check length of the cuv1
+		then #[ ! -z $cuv1 ] -> check if the cuv1 have the length != 0
+			echo cuvantul $cuv1 se afla in $x
+			break 2 #break from 2 loops || if break 3 break from 3 loops
+	fi
+	done #while from pipe
+done #done for "FOR"
+
+===================================================================================================
+Multe fisiere text sa se concateneze in ordine alfabetica. Sa se faca un 'cuprins'
+
+#!/bin/bash
+if [ $# -ne 1 ] # '$#' - get the number of parameters from command line
+ then echo "Use: pall directory"; exit1
+fi
+#check if the input is directory or not
+if [ ! \( -d $1 \) ]  # \( is for "("
+	then echo "$1 is not a directory "; exit2
+fi
+rm /tmp/${LOGNAME}Afisari /tmp/${LOGNAME}DeListat >/dev/null 2>&1   #{LOGNAME} user name
+TotalLinii=0
+find $1 -type f -print | sort | while read FISIER
+do
+#find $1 parcurge toate fisierele din folder si din subfoldere
+# -type f se i-a in considerare doar fisierele
+# -print 'print doar fisierele'
+	if file $FISIER | egrep "exec | data | empty | cannot open" >/dev/null 2>&1
+		then continue
+	fi
+	NrLinii=`wc -l < $FISIER`
+	Linie = ${TotalLinii}"pana la"$FISIER #Linia de cuprins
+	#echo $Linie /tmp/tdy #in plus
+	echo $Linie >> /tmp/${LOGNAME}DeListat
+	echo $Linie >> /tmp/${LOGNAME}Afisari
+	pr -f $FISIER >> /tmp/${LOGNAME}Afisari #pun fisierul actual in fisierul mare
+	TotalLinii = `expr $TotalLinii + $NrLinii`
+done #Done for while
+echo "TotalGeneral" $TotalLinii >> /tmp/${LOGNAME}DeListat #cuprinsul in DeListat
+echo "TotalGeneral" $TotalLinii >> /tmp/${LOGNAME}Afisari #arhiva mare
+echo /tmp/${LOGNAME}Afisari >> /tmp/${LOGNAME}DeListat #concatenare Cuprins cu Arhiva mare
+rm /tmp/${LOGNAME}Afisari
+
+
+===================================================================================================
+[Shell in Windows]
+filename.bat #standard in Windows
+directive
+variabile
+comenzi
+etichete
+---------------------------------
+Directive
+---------------------------------
+for %%var in (multime) do comanda
+for %var in (multime) do comanda
+
+call fisier (parametrii)
+
+if [not] sir1 == sir2 comanda
+if [not] exist fisier comanda
+if [not] errorlelvel n comanda
+
+goto eticheta
+
+shift
+
+set nume=valoare  %nume%
+
+echo on/off/mesaj
+
+pause mesaj //wait for a key to be pressed
+
+rem comentariu
+
+===================================================================================================
+
+concat dir aduna f1 f2 ... fn #lipeste fisierele text din directerul dir in fisierul aduna
+-----------------------------------------------
+if "%3" ==" " goto eroare
+if "%2" ==" " goto eroare
+if "%1" ==" " goto eroare
+
+if not exist %1 goto eroare
+set dir=%1
+set aduna =%2
+shift
+shift
+shift
+:loop
+	if "%0" == "" goto stop
+	type %dir%\%0 >>  %aduna%
+	shift
+goto loop
+
+:eroare
+	echo "Nu-i bine"
+:stop
+
+===================================================================================================
+[Proces]
+===================================================================================================
+Triplet
+->program
+->procesor
+->enviroment
+
+
+fisier executabil
+	.com
+	.exe
+	.elf [Linux/Unix]
+
+Formatul unui fisier executabil in Unix

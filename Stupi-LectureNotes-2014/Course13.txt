@@ -1,0 +1,121 @@
+Course 13
+===================================================================================================
+[Homework]
+
+===================================================================================================
+[Observations]
+sem_init
+sem_wait
+sem_release
+
+semget
+semctl
+===================================================================================================
+
+How do you mix processes and threads????
+
+->threads are really part of a process => if you have already N threads and then you fork , the child process will have a copy of this N threads.
+
+Check notebook for a figure
+
+Why mix Processes and Threads?
+
+->if working in C a memory error in a thread fails the whole process
+->another process will not be affected
+
+
+Semaphores
+(Dijkstra)
+
+A semaphore is a pair of a value and a quene and two operations P and V
+
+(v(s), Q(s)) (Value of semaphore and quene of semaphore)
+
+Operations:
+	P-reserve
+	V-release
+
+P(s) call by process A
+
+	v(s)-- 
+	if v(s) < 0
+		state(A) = WAIT
+		Q(s) <-A
+		pass control to scheduler
+	else
+		pass control to A
+
+V(s) called by process A
+	v(s)++
+	if v(s) <=0
+		Q(s) -> B //extract from quene
+		state(s)=READY
+		pass control to scheduler
+	else
+		pass control to A
+
+
+
+How to use.
+P(s)
+//critical section
+V(s)
+
+if the initial value of semaphore is 1 we call it binary and P -works like lock , V works like unlock
+[looks like a mutex but there are differences ] [a mutex is more like a baton]
+
+
+The initial value defines its effects
+The P and V operations , if done wrongly will cause trouble. Normally the number of P and V operations should be equal.
+
+Playing chess
+
+Semaphore	W initial value 1
+			B initial value 0
+
+Process White  | Process Black
+	P(W)				P(B)			Semaphore E(empty slots) F(full slots) , E a buffer size, F - 0
+	move				move
+	V(B)				V(W)
+
+
+Producer/Consumer problem
+
+Two processes/threads and one finite buffer . One process/thread produces (store data in buffer)  other one consume (extract data). 
+Insure that producer doesn't write in the full buffer and that the consumer doesn't read from the empty buffer.
+
+E = 64
+F = 0
+
+Producer 	| Consumer
+P(E)			P(F)
+produce 1		consumer 1
+V(F)			V(E)
+
+
+----------------------------------------
+B<-1
+
+Producer 	| Consumer
+P(E)				P(F)
+P(B) 				P(B) <------.
+produce 			consume     |
+V(B) 				V(B) -------.
+V(F)				V(E)
+
+
+
+
+-------------------------------------------------
+
+Memory management
+
+Registers				/\ size       \/ speed
+L1
+L2
+L3 (cache memory)
+RAM
+SSD /HDD
+
+
+Principle of locality if a process /thread  requires data from a certain location it is likely going to need data in the immediate neighborhood of that location.

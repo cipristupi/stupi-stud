@@ -1,0 +1,53 @@
+Course 11
+===================================================================================================
+[Homework]
+
+===================================================================================================
+[Observations]
+what is "hypervizors"
+===================================================================================================
+OS Classification
+
+-by resource sharing:
+
+------------------------  
+Here comes a table , check note book
+
+Unix:
+-Linux
+-Solaris(SunOS)
+-HP/UX
+-AIX
+-IRIX(SGI)
+
+
+
+------------------------
+By interactivity
+	->serial systems [ not very interactive, give program to run get back results] [something about Google back-end here]
+	->time sharing  [ the CPU is shared among tasks by quanta of time ]  [Google use this like serial systems]
+	->pc & workstations  [Apple computers ~ workstations]
+	->embedded systems
+	->portable
+	->networked
+
+
+------------------------
+By internal architecture
+	->monolithical - windows , linux , solaris  [look into micro-kernel(MINIX)]
+	->hardware interface
+	->multi leveled architecture (MULTICS)
+	->virtual machines [ Virtual Box, VMWare, Wine, XEN , Solaris Zones]
+
+------------------------
+Process Lifetime States
+Check note book 
+
+
+
+
+
+-------------------------------------------------
+General OS Architecture
+
+Check note book
