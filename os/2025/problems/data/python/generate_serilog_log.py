@@ -1,3 +1,15 @@
+#!/usr/bin/env python3
+"""
+===========================================
+Custom Log Generator (Python)
+===========================================
+Usage:
+    python3 generate_serilog_log.py <number_of_lines>
+
+Description:
+    This script generates a serilog-formatted log file with random entries.
+    The output filename will be suffixed with the current time in ticks.
+"""
 import random, datetime, time, sys
 
 def current_ticks():
@@ -42,9 +54,12 @@ def gen_log():
     return log
 
 if __name__ == "__main__":
-    n = int(sys.argv[1]) if len(sys.argv) > 1 else 100
+    if len(sys.argv) < 2:
+        print("Usage: python3 generate_custom_log.py <number_of_lines>")
+        sys.exit(1)
+    LINES = int(sys.argv[1])
     filename = f"serilog_log_{current_ticks()}.txt"
     with open(filename, "w") as f:
-        for _ in range(n):
+        for _ in range(LINES):
             f.write(gen_log() + "\n")
     print(f"Log written to {filename}")

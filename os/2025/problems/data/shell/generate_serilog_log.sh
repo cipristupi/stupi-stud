@@ -1,5 +1,21 @@
 #!/bin/bash
 
+# ================================
+# Serilog-Like Log Generator (Bash)
+# ================================
+# Usage:
+#   chmod +x generate_serilog.sh
+#   ./generate_serilog.sh <number_of_lines>
+#
+# Description:
+#   This script generates a Serilog-like formatted log file (non-JSON) with random entries.
+#   The output filename will be suffixed with the current date and time in ticks.
+
+if [ -z "$1" ]; then
+  echo "Usage: $0 <number_of_lines>"
+  exit 1
+fi
+
 users=("alice" "bob" "carol" "dan" "eve" "mallory" "trent" "peggy")
 apps=("BillingEngine" "UserAuth" "FileUploader" "ReportGen" "CacheManager" "Notifier" "StreamSync")
 methods=("Authenticate" "UploadFile" "GeneratePDF" "PurgeCache" "SendAlert" "SyncData" "ValidateToken")
@@ -10,7 +26,7 @@ paths=("/tmp/file1.txt" "/data/img.jpg" "/etc/init.d/boot" "/opt/log/archive.zip
 
 ticks=$(($(date +%s%N)/1000000))
 filename="serilog_log_${ticks}.txt"
-n=${1:-100}
+n=$1
 
 generate_stack() {
     local app=$1

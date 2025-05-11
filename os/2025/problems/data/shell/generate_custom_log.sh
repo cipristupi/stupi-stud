@@ -1,4 +1,20 @@
 #!/bin/bash
+# ================================
+# Custom-Like Log Generator (Bash)
+# ================================
+# Usage:
+#   chmod +x generate_custom_log.sh
+#   ./generate_custom_log.sh <number_of_lines>
+#
+# Description:
+#   This script generates a Custom-like formatted log file (non-JSON) with random entries.
+#   The output filename will be suffixed with the current date and time in ticks.
+
+# Check if number of lines is provided
+if [ -z "$1" ]; then
+  echo "Usage: $0 <number_of_lines>"
+  exit 1
+fi
 
 users=("alice" "bob" "carol" "dan" "eve" "mallory" "trent" "peggy")
 apps=("BillingEngine" "UserAuth" "FileUploader" "ReportGen" "CacheManager" "Notifier" "StreamSync")
@@ -9,7 +25,7 @@ paths=("/data/files/report.pdf" "/var/log/syslog" "/mnt/backup/img.tar.gz" "/etc
 
 ticks=$(($(date +%s%N)/1000000))
 filename="custom_log_${ticks}.txt"
-n=${1:-100}
+n=$1
 
 generate_stack() {
     local app=$1
