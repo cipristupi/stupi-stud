@@ -1,0 +1,4 @@
+[2025-05-09 15:33:12] [INFO] [app:FinanceService] [user:alice] [method:ProcessInvoice] [ip:192.168.1.4] Stack: FinanceService->ProcessInvoice->Validate
+[2025-05-09 15:33:13] [ERROR] [app:AuthService] [user:bob] [method:Login] [ip:10.0.0.14] [err-msg:Invalid password] Stack: AuthService->Login->VerifyCredentials
+[2025-05-09 15:33:15] [PERF] [app:SearchAPI] [user:carol] [method:SearchQuery] [ip:172.16.3.1] Duration: 120ms Stack: SearchAPI->SearchQuery->Execute
+[2025-05-09 15:33:18] [WARNING] [app:StorageManager] [user:dan] [method:WriteFile] [ip:192.168.5.23] Path: /mnt/data/file.txt Stack: StorageManager->WriteFile
