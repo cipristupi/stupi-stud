@@ -1,32 +1,43 @@
-# generate_custom_log.py
-import random, datetime, time, sys, os
+import random, datetime, time, sys
 
 def current_ticks():
     return int(time.time() * 1000)
 
-users = ["alice", "bob", "carol", "dan"]
-apps = ["FinanceService", "AuthService", "SearchAPI", "StorageManager"]
-methods = ["Login", "ProcessInvoice", "SearchQuery", "WriteFile"]
+users = ["alice", "bob", "carol", "dan", "eve", "mallory", "trent", "peggy"]
+apps = ["BillingEngine", "UserAuth", "FileUploader", "ReportGen", "CacheManager", "Notifier", "StreamSync"]
+methods = ["Authenticate", "UploadFile", "GeneratePDF", "PurgeCache", "SendAlert", "SyncData", "ValidateToken"]
 levels = ["INFO", "ERROR", "WARNING", "PERF"]
-ips = ["192.168.1.4", "10.0.0.14", "172.16.3.1", "192.168.5.23"]
-err_msgs = ["Invalid password", "File not found", "Timeout occurred", "Permission denied"]
+err_msgs = [
+    "Invalid token", "User not found", "Disk quota exceeded", "Connection timeout",
+    "Unauthorized access", "Path does not exist", "Rate limit exceeded"
+]
+ip_octet = lambda: str(random.randint(1, 254))
+paths = ["/data/files/report.pdf", "/var/log/syslog", "/mnt/backup/img.tar.gz", "/etc/config/settings.json"]
 
 def gen_stack(app, method):
-    return f"{app}->{method}->" + random.choice(["Validate", "Execute", "VerifyCredentials", "Save"])
+    steps = random.choices(["Init", "Process", "Validate", "Save", "Execute", "Retry"], k=random.randint(2, 4))
+    return f"{app}->{'->'.join([method] + steps)}"
 
 def gen_line():
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     level = random.choice(levels)
     user = random.choice(users)
     app = random.choice(apps)
     method = random.choice(methods)
-    ip = random.choice(ips)
-    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    line = f"[{now}] [{level}] [app:{app}] [user:{user}] [method:{method}] [ip:{ip}]"
-    if level == "ERROR":
+    ip = f"{ip_octet()}.{ip_octet()}.{ip_octet()}.{ip_octet()}"
+    stack = gen_stack(app, method)
+    line = f"[{now}] [{level}] [user:{user}] [app:{app}] [method:{method}] [ip:{ip}]"
+
+    if random.random() < 0.2:
+        line += f" [path:{random.choice(paths)}]"
+    if level == "ERROR" and random.random() < 0.9:
         line += f" [err-msg:{random.choice(err_msgs)}]"
     if level == "PERF":
-        line += f" Duration: {random.randint(50,300)}ms"
-    line += f" Stack: {gen_stack(app, method)}"
+        line += f" [duration:{random.randint(40, 1200)}ms]"
+    if random.random() < 0.5:
+        line += f" [thread:{random.randint(1000, 9999)}]"
+
+    line += f" Stack:{stack}"
     return line
 
 if __name__ == "__main__":
