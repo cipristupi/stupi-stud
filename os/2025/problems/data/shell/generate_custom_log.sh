@@ -1,14 +1,26 @@
 #!/bin/bash
-# generate_custom_log.sh
 
-users=("alice" "bob" "carol" "dan")
-apps=("FinanceService" "AuthService" "SearchAPI" "StorageManager")
-methods=("Login" "ProcessInvoice" "SearchQuery" "WriteFile")
+users=("alice" "bob" "carol" "dan" "eve" "mallory" "trent" "peggy")
+apps=("BillingEngine" "UserAuth" "FileUploader" "ReportGen" "CacheManager" "Notifier" "StreamSync")
+methods=("Authenticate" "UploadFile" "GeneratePDF" "PurgeCache" "SendAlert" "SyncData" "ValidateToken")
 levels=("INFO" "ERROR" "WARNING" "PERF")
-ips=("192.168.1.4" "10.0.0.14" "172.16.3.1" "192.168.5.23")
-err_msgs=("Invalid password" "File not found" "Timeout occurred" "Permission denied")
+err_msgs=("Invalid token" "User not found" "Disk quota exceeded" "Connection timeout" "Unauthorized access" "Path does not exist" "Rate limit exceeded")
+paths=("/data/files/report.pdf" "/var/log/syslog" "/mnt/backup/img.tar.gz" "/etc/config/settings.json")
+
 ticks=$(($(date +%s%N)/1000000))
 filename="custom_log_${ticks}.txt"
+n=${1:-100}
+
+generate_stack() {
+    local app=$1
+    local method=$2
+    local steps=("Init" "Process" "Validate" "Save" "Execute" "Retry")
+    local chain=""
+    for i in $(seq 1 $((RANDOM % 3 + 2))); do
+        chain+="->${steps[$RANDOM % ${#steps[@]}]}"
+    done
+    echo "$app->$method$chain"
+}
 
 generate_log() {
     now=$(date "+%Y-%m-%d %H:%M:%S")
@@ -16,16 +28,25 @@ generate_log() {
     user=${users[$RANDOM % ${#users[@]}]}
     app=${apps[$RANDOM % ${#apps[@]}]}
     method=${methods[$RANDOM % ${#methods[@]}]}
-    ip=${ips[$RANDOM % ${#ips[@]}]}
-    stack="$app->$method->$(shuf -n1 -e Validate Execute VerifyCredentials Save)"
+    ip="$((RANDOM%255+1)).$((RANDOM%255+1)).$((RANDOM%255+1)).$((RANDOM%255+1))"
+    stack=$(generate_stack "$app" "$method")
+    line="[$now] [$level] [user:$user] [app:$app] [method:$method] [ip:$ip]"
 
-    line="[$now] [$level] [app:$app] [user:$user] [method:$method] [ip:$ip]"
-    [[ $level == "ERROR" ]] && line="$line [err-msg:${err_msgs[$RANDOM % ${#err_msgs[@]}]}]"
-    [[ $level == "PERF" ]] && line="$line Duration: $((RANDOM % 250 + 50))ms"
-    echo "$line Stack: $stack"
+    if (( RANDOM % 5 == 0 )); then
+        line+=" [path:${paths[$RANDOM % ${#paths[@]}]}]"
+    fi
+    if [[ "$level" == "ERROR" ]] && (( RANDOM % 10 < 9 )); then
+        line+=" [err-msg:${err_msgs[$RANDOM % ${#err_msgs[@]}]}]"
+    fi
+    if [[ "$level" == "PERF" ]]; then
+        line+=" [duration:$((RANDOM % 1200 + 30))ms]"
+    fi
+    if (( RANDOM % 2 == 0 )); then
+        line+=" [thread:$((RANDOM % 9000 + 1000))]"
+    fi
+    echo "$line Stack:$stack"
 }
 
-n=${1:-100}
 > "$filename"
 for i in $(seq 1 $n); do
     generate_log >> "$filename"

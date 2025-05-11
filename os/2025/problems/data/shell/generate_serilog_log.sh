@@ -1,14 +1,27 @@
 #!/bin/bash
-# generate_serilog_log.sh
 
-users=("alice" "bob" "carol" "dan")
-apps=("FinanceService" "AuthService" "SearchAPI" "StorageManager")
-methods=("Login" "ProcessInvoice" "SearchQuery" "WriteFile")
+users=("alice" "bob" "carol" "dan" "eve" "mallory" "trent" "peggy")
+apps=("BillingEngine" "UserAuth" "FileUploader" "ReportGen" "CacheManager" "Notifier" "StreamSync")
+methods=("Authenticate" "UploadFile" "GeneratePDF" "PurgeCache" "SendAlert" "SyncData" "ValidateToken")
 levels=("Information" "Error" "Warning" "Verbose")
-ips=("192.168.1.4" "10.0.0.14" "172.16.3.1" "192.168.5.23")
-err_msgs=("Invalid password" "File not found" "Timeout occurred" "Permission denied")
+err_msgs=("Invalid token" "User not found" "Disk quota exceeded" "Connection timeout" "Unauthorized access" "Path does not exist" "Rate limit exceeded")
+messages=("User login successful" "PDF report generated" "Cache cleared" "File uploaded" "System alert sent" "Sync completed" "Request throttled")
+paths=("/tmp/file1.txt" "/data/img.jpg" "/etc/init.d/boot" "/opt/log/archive.zip")
+
 ticks=$(($(date +%s%N)/1000000))
 filename="serilog_log_${ticks}.txt"
+n=${1:-100}
+
+generate_stack() {
+    local app=$1
+    local method=$2
+    local parts=("Init" "Dispatch" "Finalize" "Verify" "Transform" "Collect")
+    local path=""
+    for i in $(seq 1 $((RANDOM % 3 + 2))); do
+        path+="->${parts[$RANDOM % ${#parts[@]}]}"
+    done
+    echo "$app->$method$path"
+}
 
 generate_log() {
     now=$(date "+%Y-%m-%d %H:%M:%S")
@@ -16,23 +29,24 @@ generate_log() {
     user=${users[$RANDOM % ${#users[@]}]}
     app=${apps[$RANDOM % ${#apps[@]}]}
     method=${methods[$RANDOM % ${#methods[@]}]}
-    ip=${ips[$RANDOM % ${#ips[@]}]}
-    msg=""
-    case $level in
-        "Information") msg="Operation completed successfully" ;;
-        "Error") msg="An error occurred" ;;
-        "Warning") msg="Potential issue detected" ;;
-        "Verbose") msg="Performance metrics recorded" ;;
-    esac
-    stack="$app->$method->$(shuf -n1 -e Validate Execute VerifyCredentials Save)"
+    ip="$((RANDOM%255+1)).$((RANDOM%255+1)).$((RANDOM%255+1)).$((RANDOM%255+1))"
+    msg="${messages[$RANDOM % ${#messages[@]}]}"
+    stack=$(generate_stack "$app" "$method")
 
     log="$now [$level] App:$app User:$user Method:$method IP:$ip Message:'$msg'"
-    [[ $level == "Error" ]] && log="$log ErrMsg:'${err_msgs[$RANDOM % ${#err_msgs[@]}]}'"
-    log="$log Stack:$stack"
+    if [[ "$level" == "Error" ]] && (( RANDOM % 10 < 8 )); then
+        log+=" ErrMsg:'${err_msgs[$RANDOM % ${#err_msgs[@]}]}'"
+    fi
+    if (( RANDOM % 4 == 0 )); then
+        log+=" Path:'${paths[$RANDOM % ${#paths[@]}]}'"
+    fi
+    if (( RANDOM % 3 == 0 )); then
+        log+=" Thread:$((RANDOM % 9000 + 1000))"
+    fi
+    log+=" Stack:$stack"
     echo "$log"
 }
 
-n=${1:-100}
 > "$filename"
 for i in $(seq 1 $n); do
     generate_log >> "$filename"
