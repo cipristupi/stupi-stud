@@ -1,0 +1,151 @@
+C DEBUGGING SET — ANSWER KEY
+============================
+
+Each original file was intentionally seeded with:
+- 3 compilation errors
+- 3 warnings
+- 2 runtime memory problems suitable for Valgrind
+
+The fixed versions in this folder compile cleanly with:
+    gcc -Wall -Wextra -g file.c -o file
+
+Suggested workflow for students:
+1. Fix the compile errors first.
+2. Rebuild with -Wall -Wextra and remove warnings.
+3. Run with Valgrind and fix the memory issues.
+
+PROGRAM 1 — program1_numbers.c
+Compilation errors:
+1. Missing semicolon after malloc(...) in create_array.
+2. Misspelled function name: pritnf instead of printf.
+3. Missing semicolon after return 0.
+Warnings:
+1. sum_array may reach end of non-void function without returning.
+2. printf("%s", arr[i]) uses %s for an int.
+3. int extra = "oops" converts pointer to integer.
+Valgrind/runtime issues:
+1. fill_array writes one past the end with i <= n.
+2. data is freed twice.
+
+PROGRAM 2 — program2_words.c
+Compilation errors:
+1. Missing semicolon after make_word("dynamic", 3).
+2. count_letter called instead of count_letters.
+3. missing_semicolon_here() has no terminating semicolon and is invalid.
+Warnings:
+1. count_letters may reach end of non-void function.
+2. printf("word=%d", word) uses %d for a pointer.
+3. size_t weird = -1 causes suspicious signed-to-unsigned conversion.
+Valgrind/runtime issues:
+1. shout_word loops with i <= strlen(word), touching the terminator slot unnecessarily.
+2. word is never freed, causing a leak.
+
+PROGRAM 3 — program3_students.c
+Compilation errors:
+1. Missing semicolon after load_students(group, count).
+2. prinf instead of printf.
+3. undeclared_value used without declaration.
+Warnings:
+1. average_grade may reach end of non-void function.
+2. printf("avg as string: %s", average_grade(...)) uses %s for a float.
+3. int ptr_loss = note converts pointer to integer.
+Valgrind/runtime issues:
+1. s[n].grade = 99 writes past the allocated array.
+2. Only group[0].name is freed; the other names and note leak.
+
+PROGRAM 4 — program4_matrix.c
+Compilation errors:
+1. Missing semicolon after allocate_matrix(rows, cols).
+2. scretch is misspelled; should be scratch.
+3. Missing semicolon after puts("matrix ready").
+Warnings:
+1. diagonal_sum may reach end of non-void function.
+2. printf("diag=%s", diagonal_sum(...)) uses %s for an int.
+3. int maybe_small = mat converts pointer to integer.
+Valgrind/runtime issues:
+1. fill_matrix writes past each row with j <= cols.
+2. Only mat[0] and mat are freed; remaining row(s) and scratch leak.
+
+PROGRAM 5 — program5_inventory.c
+Compilation errors:
+1. Missing semicolon after assign_items(items, n).
+2. pritf instead of printf.
+3. owner = owner + ; is invalid syntax.
+Warnings:
+1. total_quantity may reach end of non-void function.
+2. printf("total=%s", total_quantity(...)) uses %s for an int.
+3. int x = "wrong" converts pointer to integer.
+Valgrind/runtime issues:
+1. strcpy(items[i].name, "toolbox") overflows the 6-byte allocation.
+2. Only items[0].name is freed; the remaining names leak.
+
+PROGRAM 6 — program6_list.c
+Compilation errors:
+1. Missing semicolon after malloc(3 * sizeof(int)).
+2. fre(head) instead of free(head) or proper list cleanup.
+3. Missing semicolon after puts("done").
+Warnings:
+1. list_sum may reach end of non-void function.
+2. printf("sum=%s", list_sum(head)) uses %s for an int.
+3. int narrow = head converts pointer to integer.
+Valgrind/runtime issues:
+1. buffer[3] writes past the allocated 3-int buffer.
+2. Nodes are not freed correctly; once the compile issue is corrected naively, head->value after free becomes a use-after-free.
+
+PROGRAM 7 — program7_book.c
+Compilation errors:
+1. Missing semicolon after new_book("Pointers", 120).
+2. count = 5 uses an undeclared identifier.
+3. missing_call(; is invalid syntax.
+Warnings:
+1. estimate_weight may reach end of non-void function.
+2. temp is an unused variable.
+3. printf("%d", "hello") uses %d for a string literal pointer.
+Valgrind/runtime issues:
+1. b->title[0] is read after b has been freed.
+2. tag is never freed, causing a leak.
+
+PROGRAM 8 — program8_queue.c
+Compilation errors:
+1. Missing semicolon after create_queue(2).
+2. qeueu_missing used without declaration.
+3. Missing semicolon after puts("queue").
+Warnings:
+1. dequeue may reach end of non-void function.
+2. printf("first=%s", dequeue(q)) uses %s for an int.
+3. int maybe = q converts pointer to integer.
+Valgrind/runtime issues:
+1. enqueue(q, 3) writes past the queue capacity of 2.
+2. helper is freed twice.
+
+PROGRAM 9 — program9_records.c
+Compilation errors:
+1. Missing semicolon after fill_records(r, n).
+2. recrod used without declaration.
+3. Missing semicolon after puts("records").
+Warnings:
+1. max_score may reach end of non-void function.
+2. printf("max=%s", max_score(...)) uses %s for a double.
+3. printf("%d", desc) uses %d for a pointer.
+Valgrind/runtime issues:
+1. r[1].id is written with strcpy after being freed.
+2. free(r) leaks the remaining nested allocations and desc is leaked.
+
+PROGRAM 10 — program10_polynomial.c
+Compilation errors:
+1. Missing semicolon after alloc_coeffs(degree).
+2. printff instead of printf.
+3. degree = ; is invalid syntax.
+4. Missing semicolon after return 0.  (Extra compile error present.)
+Warnings:
+1. evaluate may reach end of non-void function.
+2. printf("value=%s", evaluate(...)) uses %s for a double.
+3. int compressed = coeffs converts pointer to integer.
+4. not_used is an unused variable. (Extra warning present.)
+Valgrind/runtime issues:
+1. temp[0] is read after free(temp).
+2. coeffs[degree + 1] writes one past the allocation.
+
+Notes:
+- A few files contain more than the requested minimum number of issues.
+- The fixed versions remove all intentional bugs while preserving the original structure and dynamic-allocation requirement.
