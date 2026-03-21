@@ -1,0 +1,5 @@
+./a.txt
+./b.txt
+./dup1.txt
+./dup2.txt
+./empty_root.txt

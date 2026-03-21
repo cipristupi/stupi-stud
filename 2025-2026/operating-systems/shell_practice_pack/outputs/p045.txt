@@ -1,0 +1,8 @@
+hello
+world
+a    b     c
+x  y
+1,2,3,4
+x,y,z,q,r,s
+a1b2c3
+room42

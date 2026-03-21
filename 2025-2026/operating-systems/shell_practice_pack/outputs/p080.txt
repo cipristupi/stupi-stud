@@ -1,0 +1,2 @@
+2 ERROR: disk full
+1 ERROR: login failed

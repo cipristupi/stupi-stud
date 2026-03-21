@@ -1,0 +1,10 @@
+1048581 ./big1M.bin
+220 ./big.dat
+90 ./medium.dat
+79 ./app.log
+55 ./c.log
+22 ./src/main.c
+20 ./src/util.c
+19 ./bin/run.sh
+13 ./dup2.txt
+13 ./dup1.txt

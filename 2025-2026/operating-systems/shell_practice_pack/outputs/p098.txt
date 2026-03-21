@@ -1,0 +1,6 @@
+Total files: 122
+Total directories: 7
+Largest file:
+1048581 ./big1M.bin
+Most recently modified file:
+./dir2/config.json

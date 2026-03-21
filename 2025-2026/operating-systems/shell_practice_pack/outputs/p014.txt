@@ -1,0 +1,8 @@
+x=1;
+foo one
+two foo
+foofoo
+
+a
+b
+c

@@ -1,0 +1,8 @@
+   hello   
+  world  
+a    b     c
+x  y
+,,,
+x,y,z,q,r,s
+abc
+room

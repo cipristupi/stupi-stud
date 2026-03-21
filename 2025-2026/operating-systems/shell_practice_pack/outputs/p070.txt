@@ -1,0 +1,6 @@
+bin/ 1
+dir1/ 3
+dir2/ 2
+docs/ 1
+manyfiles/ 101
+src/ 2

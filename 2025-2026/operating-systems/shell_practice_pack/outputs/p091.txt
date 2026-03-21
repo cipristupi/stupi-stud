@@ -1,0 +1,6 @@
+512	./bin/
+512	./docs/
+1.0K	./dir1/
+1.0K	./dir2/
+1.0K	./src/
+51K	./manyfiles/

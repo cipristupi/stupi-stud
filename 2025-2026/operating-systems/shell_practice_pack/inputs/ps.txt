@@ -1,0 +1,7 @@
+USER PID %CPU %MEM VSZ RSS TTY STAT START TIME COMMAND
+u1 100 1.2 3.1 0 0 ? S 10:00 0:00 bash
+u1 101 12.5 2.0 0 0 ? S 10:00 0:00 python
+u1 102 5.1 12.3 0 0 ? S 10:00 0:00 firefox
+u1 103 9.0 1.0 0 0 ? S 10:00 0:00 vim
+u1 104 7.3 0.5 0 0 ? S 10:00 0:00 top
+u1 105 2.0 0.7 0 0 ? S 10:00 0:00 ssh

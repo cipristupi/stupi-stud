@@ -1,0 +1,3 @@
+root /bin/bash
+alice /bin/zsh
+bob /bin/bash

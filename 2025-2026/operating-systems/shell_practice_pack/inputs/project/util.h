@@ -1,0 +1,1 @@
+int latest_value();

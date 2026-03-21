@@ -1,0 +1,3 @@
+2025-01-01 INFO start
+2025-01-01 WARNING low memory
+2025-01-01 ERROR disk full

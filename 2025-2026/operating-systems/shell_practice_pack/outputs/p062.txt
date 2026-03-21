@@ -1,0 +1,4 @@
+3 apple
+2 banana
+1 grape
+1 orange

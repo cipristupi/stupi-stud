@@ -1,0 +1,5 @@
+12.5 python
+9.0 vim
+7.3 top
+5.1 firefox
+2.0 ssh

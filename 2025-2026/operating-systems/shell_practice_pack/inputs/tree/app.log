@@ -1,0 +1,5 @@
+INFO start
+WARNING low memory
+ERROR failed login
+INFO retry
+ERROR failed login

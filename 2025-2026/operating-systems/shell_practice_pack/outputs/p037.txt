@@ -1,0 +1,7 @@
+error one
+Error two
+ERROR three
+ERROR failed
+SUPERERROR bad
+error lower
+an ERROR happened

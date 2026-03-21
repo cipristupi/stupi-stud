@@ -1,0 +1,13 @@
+error one
+Error two
+ERROR three
+warn
+ERROR failed
+SUPERERROR bad
+error lower
+an ERROR happened
+2025-01-01 10:00:00 OK
+2025-01-01 10:03:00 OK
+2025-01-01 10:12:30 OK
+2025-01-01 10:14:00 FAIL
+2025-01-01 10:20:00 OK

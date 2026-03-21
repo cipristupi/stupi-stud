@@ -1,0 +1,7 @@
+Total lines: 3
+Total words: 6
+Unique words: 4
+Most frequent word:
+2 hello
+Longest line length: 16
+Average words per line: 2

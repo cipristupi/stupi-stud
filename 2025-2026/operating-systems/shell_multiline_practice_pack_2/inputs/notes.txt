@@ -1,0 +1,6 @@
+hello world
+this is shell scripting
+TODO: clean this file
+
+unix tools are useful
+error happens sometimes

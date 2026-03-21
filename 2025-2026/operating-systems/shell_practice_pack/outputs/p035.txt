@@ -1,0 +1,12 @@
+0 empty_root.txt
+4 temp.tmp
+5 b.txt
+6 a.txt
+12 small.bin
+13 dup1.txt
+13 dup2.txt
+55 c.log
+79 app.log
+90 medium.dat
+220 big.dat
+1048581 big1M.bin

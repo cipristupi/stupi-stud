@@ -1,0 +1,3 @@
+ERROR three
+ERROR failed
+an ERROR happened

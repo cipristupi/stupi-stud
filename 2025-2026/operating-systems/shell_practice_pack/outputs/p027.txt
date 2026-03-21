@@ -1,0 +1,2 @@
+./dir1/c.txt
+./empty_root.txt

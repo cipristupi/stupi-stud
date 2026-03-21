@@ -1,0 +1,5 @@
+2025-01-01 INFO start
+2025-01-01 WARNING low memory
+2025-01-01 ERROR disk full
+2025-01-02 INFO retry
+2025-01-02 ERROR login failed

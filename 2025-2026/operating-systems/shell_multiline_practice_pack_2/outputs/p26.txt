@@ -1,0 +1,4 @@
+Lines: 5
+ERROR: 2
+WARNING: 1
+INFO: 2
